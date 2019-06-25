@@ -3,12 +3,17 @@ function Get-ScheduledTasks
     [CmdletBinding()]
     param (
         [Parameter(
-			Position = 0,
 			ValueFromPipeline = $true,
 			ValueFromPipelineByPropertyName = $true
 		)]
 		[Alias("CN","__SERVER","IPAddress")]
-		[string]$computerName
+        [string]$computerName = "localhost",
+
+        [Parameter(
+            Mandatory = $false
+        )]
+        #default value is the root folder.
+        [string]$folder = "/"
 
     )
 
@@ -23,7 +28,7 @@ function Get-ScheduledTasks
     $sched.Connect($computerName)
 
     #Could change which folder which we look at to loop though the tasks.
-    $sched.GetFolder("\").GetTasks(0) | ForEach-Object {
+    $sched.GetFolder($folder).GetTasks(0) | ForEach-Object {
         $xml = [xml]$_.xml
         $out += New-Object psobject -Property @{
             "Server" = $c.Name
