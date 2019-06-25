@@ -1,16 +1,28 @@
-function Verb-Noun {
+function Get-ScheduledTasks
+ {
     [CmdletBinding()]
     param (
-    [Parameter(Mandatory=$true)]
-    $computer
+        [Parameter(
+			Position = 0,
+			ValueFromPipeline = $true,
+			ValueFromPipelineByPropertyName = $true
+		)]
+		[Alias("CN","__SERVER","IPAddress")]
+		[string]$computerName
+
     )
 
-
+    #The arrays created need to be blank.
     $output = @()
     $out = @()
 
+    #Creates a COM object to get the scheduled tasks
     $sched = New-Object -Com "Schedule.Service"
-    $sched.Connect($computer)
+
+    #Connects to the specified computer
+    $sched.Connect($computerName)
+
+    #Could change which folder which we look at to loop though the tasks.
     $sched.GetFolder("\").GetTasks(0) | ForEach-Object {
         $xml = [xml]$_.xml
         $out += New-Object psobject -Property @{
